@@ -64,6 +64,15 @@
   // HERO animace — spustit ihned nebo po load
   // ─────────────────────────────────────────────
   function runHero() {
+    // Odkrýt elementy (CSS v head je mělo schované)
+    gsap.set([
+      ".section_layout9 .text-style-tagline",
+      ".section_layout9 .heading-style-h1",
+      ".layout9_component .text-size-medium",
+      ".layout9_item",
+      ".layout9_image-wrapper"
+    ], { visibility: "visible" });
+
     var tl = gsap.timeline({ delay: 0.1 });
 
     tl.to(".section_layout9 .text-style-tagline", {
