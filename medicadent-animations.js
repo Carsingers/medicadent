@@ -1,12 +1,62 @@
 /**
- * MedicaDent – Page Animations
- * Luxury, subtle, performance-first
+ * MedicaDent – Page Animations + FAQ Accordion
  * Dependencies: GSAP 3 + ScrollTrigger
  */
 
 (function () {
   "use strict";
 
+  // ─────────────────────────────────────────────
+  // FAQ ACCORDION (nahrazuje Webflow IX2)
+  // ─────────────────────────────────────────────
+  function initAccordion() {
+    const accordions = document.querySelectorAll(".faq3_accordion");
+
+    accordions.forEach(function (accordion) {
+      const question = accordion.querySelector(".faq3_question");
+      const answer = accordion.querySelector(".faq3_answer");
+
+      if (!question || !answer) return;
+
+      // Výchozí stav: zavřeno
+      answer.style.height = "0px";
+      answer.style.overflow = "hidden";
+      answer.style.transition = "height 0.35s ease";
+
+      question.style.cursor = "pointer";
+
+      question.addEventListener("click", function () {
+        const isOpen = answer.style.height !== "0px";
+
+        if (isOpen) {
+          // Zavřít
+          answer.style.height = answer.scrollHeight + "px";
+          // Force reflow
+          answer.getBoundingClientRect();
+          answer.style.height = "0px";
+        } else {
+          // Otevřít
+          answer.style.height = answer.scrollHeight + "px";
+          // Po animaci přepnout na auto (aby fungovalo při resize)
+          answer.addEventListener(
+            "transitionend",
+            function () {
+              if (answer.style.height !== "0px") {
+                answer.style.height = "auto";
+              }
+            },
+            { once: true }
+          );
+        }
+      });
+    });
+  }
+
+  initAccordion();
+
+  // ─────────────────────────────────────────────
+  // GSAP ANIMACE
+  // ─────────────────────────────────────────────
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
     console.warn("MedicaDent: GSAP nebo ScrollTrigger není načtený.");
     return;
@@ -19,9 +69,7 @@
   ).matches;
   if (prefersReduced) return;
 
-  // ─────────────────────────────────────────────
-  // 2. LOGA POJIŠŤOVEN — fade při scrollu
-  // ─────────────────────────────────────────────
+  // Loga pojišťoven
   gsap.from(".logo5_logo", {
     scrollTrigger: {
       trigger: ".logo5_list",
@@ -35,9 +83,7 @@
     ease: "power2.out",
   });
 
-  // ─────────────────────────────────────────────
-  // 3. FORMULÁŘ SEKCE — elegantní fade-in
-  // ─────────────────────────────────────────────
+  // Formulář — nadpis
   gsap.from(".contact10_heading-wrapper", {
     scrollTrigger: {
       trigger: ".contact10_content-left",
@@ -50,6 +96,7 @@
     ease: "power2.out",
   });
 
+  // Formulář — form block
   gsap.from(".contact10_form-block", {
     scrollTrigger: {
       trigger: ".contact10_form-block",
@@ -63,9 +110,7 @@
     delay: 0.15,
   });
 
-  // ─────────────────────────────────────────────
-  // 4. FAQ SEKCE — accordion položky
-  // ─────────────────────────────────────────────
+  // FAQ — accordion položky
   gsap.from(".faq3_accordion", {
     scrollTrigger: {
       trigger: ".faq3_list",
@@ -79,6 +124,7 @@
     ease: "power2.out",
   });
 
+  // FAQ — levý sloupec nadpis
   gsap.from(".faq6_content-left .heading-style-h2", {
     scrollTrigger: {
       trigger: ".faq6_content-left",
@@ -91,6 +137,7 @@
     ease: "power2.out",
   });
 
+  // FAQ — obrázek
   gsap.from(".faq6_content-left .Image", {
     scrollTrigger: {
       trigger: ".faq6_content-left",
@@ -104,10 +151,7 @@
     delay: 0.2,
   });
 
-  // ─────────────────────────────────────────────
-  // 1. HERO SEKCE — čekáme na načtení fontů
-  //    aby nedošlo k FOUT + animaci zároveň
-  // ─────────────────────────────────────────────
+  // Hero sekce — čekáme na font
   document.fonts.ready.then(() => {
     const heroTimeline = gsap.timeline({ delay: 0.1 });
 
