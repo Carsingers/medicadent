@@ -65,7 +65,6 @@
   // HERO animace — spustit ihned nebo po load
   // ─────────────────────────────────────────────
   function runHero() {
-    // Odkrýt elementy (CSS v head je mělo schované)
     gsap.set([
       ".section_layout9 .text-style-tagline",
       ".section_layout9 .heading-style-h1",
@@ -77,24 +76,31 @@
 
     var tl = gsap.timeline({ delay: 0.1 });
 
+    // Absolutní pozice v timeline — každý element startuje
+    // ještě před dokončením předchozího → plynulý kaskádový efekt
     tl.to(".section_layout9 .text-style-tagline", {
       opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
-    });
+    }, 0);
+
     tl.to(".section_layout9 .heading-style-h1", {
       opacity: 1, y: 0, duration: 1.0, ease: "power3.out",
-    }, "-=0.5");
+    }, 0.2);
+
     tl.to(".layout9_component .text-size-medium", {
       opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
-    }, "-=0.6");
+    }, 0.4);
+
     tl.to(".layout9_item", {
       opacity: 1, y: 0, duration: 0.7, stagger: 0.15, ease: "power2.out",
-    }, "-=0.4");
+    }, 0.55);
+
     tl.to(".layout9_image-wrapper", {
       opacity: 1, x: 0, duration: 1.1, ease: "power2.out",
-    }, "-=0.9");
+    }, 0.2);
+
     tl.to(".logo5_content", {
       opacity: 1, y: 0, duration: 0.7, ease: "power2.out",
-    }, "-=0.5");
+    }, 0.9);
   }
 
   if (document.readyState === "complete") {
