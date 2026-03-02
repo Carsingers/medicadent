@@ -20,66 +20,6 @@
   if (prefersReduced) return;
 
   // ─────────────────────────────────────────────
-  // 1. HERO SEKCE — fade + slide při načtení
-  //    Selektory zúženy na .section_layout9
-  //    aby nedošlo ke kolizi s FAQ sekcí
-  // ─────────────────────────────────────────────
-  const heroTimeline = gsap.timeline({ delay: 0.15 });
-
-  heroTimeline.from(".section_layout9 .text-style-tagline", {
-    opacity: 0,
-    y: 16,
-    duration: 0.8,
-    ease: "power2.out",
-  });
-
-  heroTimeline.from(
-    ".section_layout9 .heading-style-h1",
-    {
-      opacity: 0,
-      y: 24,
-      duration: 1.0,
-      ease: "power3.out",
-    },
-    "-=0.5"
-  );
-
-  // Perex — zúženo na .layout9_component aby se nepletlo s FAQ .text-size-medium
-  heroTimeline.from(
-    ".layout9_component .text-size-medium",
-    {
-      opacity: 0,
-      y: 16,
-      duration: 0.8,
-      ease: "power2.out",
-    },
-    "-=0.6"
-  );
-
-  heroTimeline.from(
-    ".layout9_item",
-    {
-      opacity: 0,
-      y: 12,
-      duration: 0.7,
-      stagger: 0.15,
-      ease: "power2.out",
-    },
-    "-=0.4"
-  );
-
-  heroTimeline.from(
-    ".layout9_image-wrapper",
-    {
-      opacity: 0,
-      x: 20,
-      duration: 1.1,
-      ease: "power2.out",
-    },
-    "-=0.9"
-  );
-
-  // ─────────────────────────────────────────────
   // 2. LOGA POJIŠŤOVEN — fade při scrollu
   // ─────────────────────────────────────────────
   gsap.from(".logo5_logo", {
@@ -163,4 +103,65 @@
     ease: "power2.out",
     delay: 0.2,
   });
+
+  // ─────────────────────────────────────────────
+  // 1. HERO SEKCE — čekáme na načtení fontů
+  //    aby nedošlo k FOUT + animaci zároveň
+  // ─────────────────────────────────────────────
+  document.fonts.ready.then(() => {
+    const heroTimeline = gsap.timeline({ delay: 0.1 });
+
+    heroTimeline.from(".section_layout9 .text-style-tagline", {
+      opacity: 0,
+      y: 16,
+      duration: 0.8,
+      ease: "power2.out",
+    });
+
+    heroTimeline.from(
+      ".section_layout9 .heading-style-h1",
+      {
+        opacity: 0,
+        y: 24,
+        duration: 1.0,
+        ease: "power3.out",
+      },
+      "-=0.5"
+    );
+
+    heroTimeline.from(
+      ".layout9_component .text-size-medium",
+      {
+        opacity: 0,
+        y: 16,
+        duration: 0.8,
+        ease: "power2.out",
+      },
+      "-=0.6"
+    );
+
+    heroTimeline.from(
+      ".layout9_item",
+      {
+        opacity: 0,
+        y: 12,
+        duration: 0.7,
+        stagger: 0.15,
+        ease: "power2.out",
+      },
+      "-=0.4"
+    );
+
+    heroTimeline.from(
+      ".layout9_image-wrapper",
+      {
+        opacity: 0,
+        x: 20,
+        duration: 1.1,
+        ease: "power2.out",
+      },
+      "-=0.9"
+    );
+  });
+
 })();
