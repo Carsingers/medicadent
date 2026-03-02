@@ -151,8 +151,22 @@
     delay: 0.2,
   });
 
-  // Hero sekce — čekáme na font
+  // Hero sekce — schovat elementy okamžitě, pak animovat po načtení fontů
+  const heroSelectors = [
+    ".section_layout9 .text-style-tagline",
+    ".section_layout9 .heading-style-h1",
+    ".layout9_component .text-size-medium",
+    ".layout9_item",
+    ".layout9_image-wrapper",
+  ];
+  heroSelectors.forEach(function(sel) {
+    gsap.set(sel, { opacity: 0, visibility: "hidden" });
+  });
+
   document.fonts.ready.then(() => {
+    heroSelectors.forEach(function(sel) {
+      gsap.set(sel, { visibility: "visible" });
+    });
     const heroTimeline = gsap.timeline({ delay: 0.1 });
 
     heroTimeline.from(".section_layout9 .text-style-tagline", {
