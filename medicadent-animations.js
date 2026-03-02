@@ -65,9 +65,9 @@
   }
 
   // ─────────────────────────────────────────────
-  // HERO — spustit po 100ms (font má čas načíst)
+  // HERO — spustit až po plném načtení stránky
   // ─────────────────────────────────────────────
-  setTimeout(function() {
+  window.addEventListener("load", function() {
     var heroTimeline = gsap.timeline();
 
     heroTimeline.from(".section_layout9 .text-style-tagline", {
@@ -85,7 +85,7 @@
     heroTimeline.from(".layout9_image-wrapper", {
       opacity: 0, x: 20, duration: 1.1, ease: "power2.out",
     }, "-=0.9");
-  }, 100);
+  });
 
   // ─────────────────────────────────────────────
   // SCROLL ANIMACE
