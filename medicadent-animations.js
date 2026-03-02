@@ -45,42 +45,43 @@
   // GSAP
   // ─────────────────────────────────────────────
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-    document.querySelectorAll(
-      ".section_layout9 .text-style-tagline, .section_layout9 .heading-style-h1, .layout9_component .text-size-medium, .layout9_item, .layout9_image-wrapper"
-    ).forEach(function(el) { el.style.opacity = "1"; });
     return;
   }
 
   gsap.registerPlugin(ScrollTrigger);
 
   var prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (prefersReduced) {
-    document.querySelectorAll(
-      ".section_layout9 .text-style-tagline, .section_layout9 .heading-style-h1, .layout9_component .text-size-medium, .layout9_item, .layout9_image-wrapper"
-    ).forEach(function(el) { el.style.opacity = "1"; });
-    return;
-  }
+  if (prefersReduced) return;
+
+  // Schovat hero elementy ihned přes GSAP (aby GSAP mohl animovat zpět)
+  gsap.set([
+    ".section_layout9 .text-style-tagline",
+    ".section_layout9 .heading-style-h1",
+    ".layout9_component .text-size-medium",
+    ".layout9_item",
+    ".layout9_image-wrapper"
+  ], { opacity: 0 });
 
   // ─────────────────────────────────────────────
-  // HERO — spustit ihned (readyState check)
+  // HERO animace
   // ─────────────────────────────────────────────
   function runHero() {
-    var heroTimeline = gsap.timeline();
+    var heroTimeline = gsap.timeline({ delay: 0.1 });
 
-    heroTimeline.from(".section_layout9 .text-style-tagline", {
-      opacity: 0, y: 16, duration: 0.8, ease: "power2.out",
+    heroTimeline.to(".section_layout9 .text-style-tagline", {
+      opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
     });
-    heroTimeline.from(".section_layout9 .heading-style-h1", {
-      opacity: 0, y: 24, duration: 1.0, ease: "power3.out",
+    heroTimeline.to(".section_layout9 .heading-style-h1", {
+      opacity: 1, y: 0, duration: 1.0, ease: "power3.out",
     }, "-=0.5");
-    heroTimeline.from(".layout9_component .text-size-medium", {
-      opacity: 0, y: 16, duration: 0.8, ease: "power2.out",
+    heroTimeline.to(".layout9_component .text-size-medium", {
+      opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
     }, "-=0.6");
-    heroTimeline.from(".layout9_item", {
-      opacity: 0, y: 12, duration: 0.7, stagger: 0.15, ease: "power2.out",
+    heroTimeline.to(".layout9_item", {
+      opacity: 1, y: 0, duration: 0.7, stagger: 0.15, ease: "power2.out",
     }, "-=0.4");
-    heroTimeline.from(".layout9_image-wrapper", {
-      opacity: 0, x: 20, duration: 1.1, ease: "power2.out",
+    heroTimeline.to(".layout9_image-wrapper", {
+      opacity: 1, x: 0, duration: 1.1, ease: "power2.out",
     }, "-=0.9");
   }
 
