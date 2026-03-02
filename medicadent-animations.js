@@ -59,6 +59,7 @@
   gsap.set(".layout9_component .text-size-medium",  { opacity: 0, y: 16 });
   gsap.set(".layout9_item",                         { opacity: 0, y: 12 });
   gsap.set(".layout9_image-wrapper",                { opacity: 0, x: 20 });
+  gsap.set(".logo5_content",                        { opacity: 0, y: 12 });
 
   // ─────────────────────────────────────────────
   // HERO animace — spustit ihned nebo po load
@@ -70,7 +71,8 @@
       ".section_layout9 .heading-style-h1",
       ".layout9_component .text-size-medium",
       ".layout9_item",
-      ".layout9_image-wrapper"
+      ".layout9_image-wrapper",
+      ".logo5_content"
     ], { visibility: "visible" });
 
     var tl = gsap.timeline({ delay: 0.1 });
@@ -90,6 +92,9 @@
     tl.to(".layout9_image-wrapper", {
       opacity: 1, x: 0, duration: 1.1, ease: "power2.out",
     }, "-=0.9");
+    tl.to(".logo5_content", {
+      opacity: 1, y: 0, duration: 0.7, ease: "power2.out",
+    }, "-=0.5");
   }
 
   if (document.readyState === "complete") {
