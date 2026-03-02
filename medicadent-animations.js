@@ -7,7 +7,6 @@
 (function () {
   "use strict";
 
-  // Čekáme na GSAP
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
     console.warn("MedicaDent: GSAP nebo ScrollTrigger není načtený.");
     return;
@@ -15,7 +14,6 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
-  // Respektujeme prefers-reduced-motion
   const prefersReduced = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
   ).matches;
@@ -23,20 +21,20 @@
 
   // ─────────────────────────────────────────────
   // 1. HERO SEKCE — fade + slide při načtení
+  //    Selektory zúženy na .section_layout9
+  //    aby nedošlo ke kolizi s FAQ sekcí
   // ─────────────────────────────────────────────
   const heroTimeline = gsap.timeline({ delay: 0.15 });
 
-  // Tagline "SPOUŠTÍME PŘEDREGISTRACE"
-  heroTimeline.from(".text-style-tagline", {
+  heroTimeline.from(".section_layout9 .text-style-tagline", {
     opacity: 0,
     y: 16,
     duration: 0.8,
     ease: "power2.out",
   });
 
-  // Hlavní nadpis
   heroTimeline.from(
-    ".heading-style-h1",
+    ".section_layout9 .heading-style-h1",
     {
       opacity: 0,
       y: 24,
@@ -46,9 +44,9 @@
     "-=0.5"
   );
 
-  // Perex text
+  // Perex — zúženo na .layout9_component aby se nepletlo s FAQ .text-size-medium
   heroTimeline.from(
-    ".text-size-medium",
+    ".layout9_component .text-size-medium",
     {
       opacity: 0,
       y: 16,
@@ -58,7 +56,6 @@
     "-=0.6"
   );
 
-  // Feature položky (checkmarky) — staggered
   heroTimeline.from(
     ".layout9_item",
     {
@@ -71,7 +68,6 @@
     "-=0.4"
   );
 
-  // Obrázek ordinace — jemný fade zleva
   heroTimeline.from(
     ".layout9_image-wrapper",
     {
@@ -143,7 +139,6 @@
     ease: "power2.out",
   });
 
-  // FAQ nadpis sekce
   gsap.from(".faq6_content-left .heading-style-h2", {
     scrollTrigger: {
       trigger: ".faq6_content-left",
@@ -156,7 +151,6 @@
     ease: "power2.out",
   });
 
-  // Obrázek ordinace v FAQ sekci
   gsap.from(".faq6_content-left .Image", {
     scrollTrigger: {
       trigger: ".faq6_content-left",
