@@ -45,11 +45,9 @@
   // GSAP
   // ─────────────────────────────────────────────
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-    // GSAP není — odkrýt hero elementy aby nezůstaly schované
-    var els = document.querySelectorAll(
+    document.querySelectorAll(
       ".section_layout9 .text-style-tagline, .section_layout9 .heading-style-h1, .layout9_component .text-size-medium, .layout9_item, .layout9_image-wrapper"
-    );
-    els.forEach(function(el) { el.style.opacity = "1"; });
+    ).forEach(function(el) { el.style.opacity = "1"; });
     return;
   }
 
@@ -57,17 +55,16 @@
 
   var prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (prefersReduced) {
-    var els2 = document.querySelectorAll(
+    document.querySelectorAll(
       ".section_layout9 .text-style-tagline, .section_layout9 .heading-style-h1, .layout9_component .text-size-medium, .layout9_item, .layout9_image-wrapper"
-    );
-    els2.forEach(function(el) { el.style.opacity = "1"; });
+    ).forEach(function(el) { el.style.opacity = "1"; });
     return;
   }
 
   // ─────────────────────────────────────────────
-  // HERO — spustit až po plném načtení stránky
+  // HERO — spustit ihned (readyState check)
   // ─────────────────────────────────────────────
-  window.addEventListener("load", function() {
+  function runHero() {
     var heroTimeline = gsap.timeline();
 
     heroTimeline.from(".section_layout9 .text-style-tagline", {
@@ -85,7 +82,13 @@
     heroTimeline.from(".layout9_image-wrapper", {
       opacity: 0, x: 20, duration: 1.1, ease: "power2.out",
     }, "-=0.9");
-  });
+  }
+
+  if (document.readyState === "complete") {
+    runHero();
+  } else {
+    window.addEventListener("load", runHero);
+  }
 
   // ─────────────────────────────────────────────
   // SCROLL ANIMACE
