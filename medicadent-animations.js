@@ -14,6 +14,34 @@
   var isHome     = !!document.querySelector(".section_layout9");
 
   // ─────────────────────────────────────────────
+  // LAYOUT31 — image height matching
+  // CSS grid + aspect-ratio conflict → JS fix
+  // Wrapper dostane explicitní výšku = výška content sloupce
+  // ─────────────────────────────────────────────
+  function syncLayout31Heights() {
+    document.querySelectorAll(".layout31_component").forEach(function (comp) {
+      var contentLeft  = comp.querySelector(".layout31_content-left");
+      var imageWrapper = comp.querySelector(".layout31_image-wrapper");
+      if (!contentLeft || !imageWrapper) return;
+      imageWrapper.style.height = contentLeft.offsetHeight + "px";
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", syncLayout31Heights);
+  } else {
+    syncLayout31Heights();
+  }
+
+  window.addEventListener("load", syncLayout31Heights);
+
+  var _layout31ResizeTimer;
+  window.addEventListener("resize", function () {
+    clearTimeout(_layout31ResizeTimer);
+    _layout31ResizeTimer = setTimeout(syncLayout31Heights, 120);
+  });
+
+  // ─────────────────────────────────────────────
   // FAQ ACCORDION — generic
   // ─────────────────────────────────────────────
   function initAccordion(questionSel, answerSel, listSel) {
