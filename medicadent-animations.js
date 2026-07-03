@@ -42,6 +42,80 @@
   });
 
   // ─────────────────────────────────────────────
+  // BUTTON HOVER — text char roll + squish scale
+  // Adapted from Osmo button-038 (osmo.supply)
+  // Bezpečné: wrappuje jen text node, neruší DOM
+  // ─────────────────────────────────────────────
+  function initButtonHover() {
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    var WIDTH_DELTA  = -10; // px squish (matches button-038 defaults)
+    var HEIGHT_DELTA = -5;
+
+    function splitBtnText(btn) {
+      // Najdi první neprázdný text node (přeskočí SVG/ikony)
+      var textNode = null;
+      var walker = document.createTreeWalker(btn, NodeFilter.SHOW_TEXT, {
+        acceptNode: function (n) {
+          return n.textContent.trim()
+            ? NodeFilter.FILTER_ACCEPT
+            : NodeFilter.FILTER_SKIP;
+        }
+      }, false);
+      textNode = walker.nextNode();
+      if (!textNode) return;
+
+      var text = textNode.textContent;
+      var wrapper = document.createElement("span");
+      wrapper.className = "md-btn-text";
+
+      Array.from(text).forEach(function (char, i) {
+        var span = document.createElement("span");
+        span.textContent = char;
+        span.className = "md-btn-char";
+        span.style.setProperty("--ci", i);
+        if (char === " ") span.style.whiteSpace = "pre";
+        wrapper.appendChild(span);
+      });
+
+      textNode.parentNode.replaceChild(wrapper, textNode);
+    }
+
+    function calcScale(btn) {
+      var w = btn.offsetWidth;
+      var h = btn.offsetHeight;
+      if (!w || !h) return;
+      btn.style.setProperty("--md-btn-sx", ((w + WIDTH_DELTA) / w).toFixed(4));
+      btn.style.setProperty("--md-btn-sy", ((h + HEIGHT_DELTA) / h).toFixed(4));
+    }
+
+    var btns = [];
+    document.querySelectorAll(".button").forEach(function (btn) {
+      if (btn.dataset.mdBtn) return;
+      btn.dataset.mdBtn = "1";
+      splitBtnText(btn);
+      calcScale(btn);
+      btns.push(btn);
+    });
+
+    var _btnResizeTimer;
+    window.addEventListener("resize", function () {
+      clearTimeout(_btnResizeTimer);
+      _btnResizeTimer = setTimeout(function () { btns.forEach(calcScale); }, 120);
+    });
+  }
+
+  // Spustit po načtení fontů — font ovlivní velikost buttonu
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      document.fonts.ready.then(initButtonHover);
+    });
+  } else {
+    document.fonts.ready.then(initButtonHover);
+  }
+
+  // ─────────────────────────────────────────────
   // FAQ ACCORDION — generic
   // ─────────────────────────────────────────────
   function initAccordion(questionSel, answerSel, listSel) {
