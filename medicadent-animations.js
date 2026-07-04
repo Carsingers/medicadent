@@ -88,6 +88,15 @@
       if (!w || !h) return;
       btn.style.setProperty("--md-btn-sx", ((w + WIDTH_DELTA) / w).toFixed(4));
       btn.style.setProperty("--md-btn-sy", ((h + HEIGHT_DELTA) / h).toFixed(4));
+
+      // Výpočet shadow offsetu — shadow musí začínat POD spodní hranou buttonu
+      // jinak je viditelný v default stavu (button může být vyšší než 1.3em)
+      var textEl = btn.querySelector(".md-btn-text");
+      var fontSize = parseFloat(getComputedStyle(btn).fontSize) || 16;
+      var textOffsetTop = textEl ? textEl.offsetTop : 0;
+      // Vzdálenost od horní hrany textu po dolní hranu buttonu + 8px rezerva
+      var distPx = h - textOffsetTop + 8;
+      btn.style.setProperty("--md-btn-offset", (distPx / fontSize).toFixed(3) + "em");
     }
 
     var btns = [];
@@ -163,6 +172,16 @@
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
   // ─────────────────────────────────────────────
+  // EDITOR / DESIGNER GUARD
+  // Webflow Designer přidá wf-design-mode na <html> synchronně.
+  // Webflow Editor: Webflow.env('editor') je dostupné po načtení skriptů.
+  // V obou případech přeskočíme animace — obsah musí být viditelný.
+  // ─────────────────────────────────────────────
+  var isEditorMode = document.documentElement.classList.contains("wf-design-mode") ||
+    (window.Webflow && typeof window.Webflow.env === "function" && window.Webflow.env("editor"));
+  if (isEditorMode) return;
+
+  // ─────────────────────────────────────────────
   // HELPER — safe gsap.from() with ScrollTrigger
   // Používáme from() nikoliv fromTo() — elementy zůstávají viditelné
   // dokud ScrollTrigger neodpálí, pak se animují. Bezpečnější.
@@ -195,18 +214,18 @@
 
     // ── HERO (on load) ──────────────────────────
     // Elementy jsou skryté přes <head> CSS (opacity:0; visibility:hidden)
-    // gsap.set() přidá Y offset, pak timeline vše odhalí
-
-    gsap.set([
-      ".section_header36 .text-style-tagline",
-      ".section_header36 .heading-style-h1",
-      ".section_header36 .button-group",
-    ], { y: 20 });
-
-    gsap.set(".section_header36 .layout9_item",           { y: 14 });
-    gsap.set(".section_header36 .header36_image-wrapper", { x: 28 });
+    // gsap.set() přidá Y offset UVNITŘ runHomeCopyHero — nevolá se v editoru
 
     function runHomeCopyHero() {
+      // Nastav počáteční Y/X offsets těsně před animací
+      gsap.set([
+        ".section_header36 .text-style-tagline",
+        ".section_header36 .heading-style-h1",
+        ".section_header36 .button-group",
+      ], { y: 20 });
+      gsap.set(".section_header36 .layout9_item",           { y: 14 });
+      gsap.set(".section_header36 .header36_image-wrapper", { x: 28 });
+
       // Odstraň visibility:hidden — GSAP pak animuje opacity
       gsap.set([
         ".section_header36 .text-style-tagline",
