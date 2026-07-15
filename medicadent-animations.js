@@ -19,6 +19,30 @@
   var isHome     = !!document.querySelector(".section_layout9");
 
   // ─────────────────────────────────────────────
+  // NOUZOVÁ POJISTKA — force reveal
+  // Hero a další elementy jsou skryté přes <head> CSS
+  // (opacity:0; visibility:hidden) a odkrývá je až GSAP timeline.
+  // Pokud GSAP/ScrollTrigger z JAKÉHOKOLIV důvodu neproběhne (CDN
+  // nedostupné, špatné pořadí <script> tagů, chyba jinde ve skriptu),
+  // obsah by jinak zůstal navždy neviditelný. Po 2.5s ho natvrdo
+  // odkryjeme bez ohledu na to, jestli animace proběhla.
+  // ─────────────────────────────────────────────
+  setTimeout(function () {
+    document.querySelectorAll(
+      ".text-style-tagline, .heading-style-h1, .button-group, .layout9_item, " +
+      ".header36_image-wrapper, .layout9_image-wrapper, .logo5_content, " +
+      ".layout31_image-wrapper, .layout31_item"
+    ).forEach(function (el) {
+      var cs = getComputedStyle(el);
+      if (cs.visibility === "hidden" || cs.opacity === "0") {
+        el.style.opacity = "1";
+        el.style.visibility = "visible";
+        el.style.transform = "none";
+      }
+    });
+  }, 2500);
+
+  // ─────────────────────────────────────────────
   // LAYOUT31 — image height matching
   // CSS grid + aspect-ratio conflict → JS fix
   // Wrapper dostane explicitní výšku = výška content sloupce
@@ -184,7 +208,21 @@
   // ─────────────────────────────────────────────
   // GSAP GUARD
   // ─────────────────────────────────────────────
-  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
+  function forceRevealNow() {
+    document.querySelectorAll(
+      ".text-style-tagline, .heading-style-h1, .button-group, .layout9_item, " +
+      ".header36_image-wrapper, .layout9_image-wrapper, .logo5_content, " +
+      ".layout31_image-wrapper, .layout31_item"
+    ).forEach(function (el) {
+      el.style.opacity = "1";
+      el.style.visibility = "visible";
+      el.style.transform = "none";
+    });
+  }
+  if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
+    forceRevealNow();
+    return;
+  }
   gsap.registerPlugin(ScrollTrigger);
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
