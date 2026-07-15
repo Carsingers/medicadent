@@ -19,19 +19,25 @@
   var isHome     = !!document.querySelector(".section_layout9");
 
   // ─────────────────────────────────────────────
-  // NOUZOVÁ POJISTKA — force reveal
-  // Hero a další elementy jsou skryté přes <head> CSS
-  // (opacity:0; visibility:hidden) a odkrývá je až GSAP timeline.
-  // Pokud GSAP/ScrollTrigger z JAKÉHOKOLIV důvodu neproběhne (CDN
-  // nedostupné, špatné pořadí <script> tagů, chyba jinde ve skriptu),
-  // obsah by jinak zůstal navždy neviditelný. Po 2.5s ho natvrdo
-  // odkryjeme bez ohledu na to, jestli animace proběhla.
+  // NOUZOVÁ POJISTKA — force reveal HERO ONLY
+  // Pozor: cílí jen na hero sekci (section_header36 / section_layout9),
+  // NE na scroll-triggered sekce (layout31, layout309, layout21, ...) —
+  // ty mají zůstat schované, dokud k nim uživatel nedoscrolluje, to je
+  // zamýšlené chování ScrollTriggeru, ne bug.
+  // Hero je skrytý přes <head> CSS (opacity:0; visibility:hidden) a
+  // odkrývá ho až runHomeCopyHero()/runHomeHero() po "load" eventu.
+  // Pokud by z jakéhokoli důvodu (chyba jinde ve skriptu, GSAP
+  // timing) neproběhly, po 3s se hero natvrdo odkryje bez animace —
+  // ale JEN hero, zbytek stránky se chová normálně dál.
   // ─────────────────────────────────────────────
   setTimeout(function () {
     document.querySelectorAll(
-      ".text-style-tagline, .heading-style-h1, .button-group, .layout9_item, " +
-      ".header36_image-wrapper, .layout9_image-wrapper, .logo5_content, " +
-      ".layout31_image-wrapper, .layout31_item"
+      ".section_header36 .text-style-tagline, .section_header36 .heading-style-h1, " +
+      ".section_header36 .button-group, .section_header36 .layout9_item, " +
+      ".section_header36 .header36_image-wrapper, " +
+      ".section_layout9 .text-style-tagline, .section_layout9 .heading-style-h1, " +
+      ".layout9_component .text-size-medium, .layout9_item, " +
+      ".layout9_image-wrapper, .logo5_content"
     ).forEach(function (el) {
       var cs = getComputedStyle(el);
       if (cs.visibility === "hidden" || cs.opacity === "0") {
@@ -40,7 +46,7 @@
         el.style.transform = "none";
       }
     });
-  }, 2500);
+  }, 3000);
 
   // ─────────────────────────────────────────────
   // LAYOUT31 — image height matching
