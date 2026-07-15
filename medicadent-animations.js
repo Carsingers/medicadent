@@ -1,9 +1,14 @@
 /**
  * MedicaDent – Page Animations + FAQ Accordion
- * v3 – dual-page: Home (legacy layout9) + Home Copy (header36)
+ * v4 – dual-page: Home (legacy layout9) + Home Copy (header36)
  * Dependencies: GSAP 3.12.5 + ScrollTrigger (loaded in Webflow page footer)
+ *
+ * v4 change: LAYOUT31 height-sync now uses ResizeObserver instead of
+ * relying only on load/resize events, plus a fonts.ready call — fixes
+ * a bug where the image wrapper could end up with 0 height if this
+ * script executed/loaded later than the window "load" event, or before
+ * web fonts finished swapping in and changing the text column height.
  */
-
 (function () {
   "use strict";
 
@@ -27,19 +32,35 @@
     });
   }
 
+  // Immediate + safety-net calls
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", syncLayout31Heights);
   } else {
     syncLayout31Heights();
   }
-
   window.addEventListener("load", syncLayout31Heights);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(syncLayout31Heights);
+  }
 
-  var _layout31ResizeTimer;
-  window.addEventListener("resize", function () {
-    clearTimeout(_layout31ResizeTimer);
-    _layout31ResizeTimer = setTimeout(syncLayout31Heights, 120);
-  });
+  // Robustní varianta: sleduj změny výšky content-left přímo přes
+  // ResizeObserver, nezávisle na tom, kdy se tento skript spustí nebo
+  // kdy web font doběhne. Pokrývá i pozdní/asynchronní načtení skriptu.
+  if ("ResizeObserver" in window) {
+    var layout31Observer = new ResizeObserver(function () {
+      syncLayout31Heights();
+    });
+    document.querySelectorAll(".layout31_content-left").forEach(function (el) {
+      layout31Observer.observe(el);
+    });
+  } else {
+    // fallback pro staré prohlížeče bez ResizeObserver
+    var _layout31ResizeTimer;
+    window.addEventListener("resize", function () {
+      clearTimeout(_layout31ResizeTimer);
+      _layout31ResizeTimer = setTimeout(syncLayout31Heights, 120);
+    });
+  }
 
   // ─────────────────────────────────────────────
   // BUTTON HOVER — text char roll + squish scale
@@ -69,7 +90,6 @@
       var text = textNode.textContent;
       var wrapper = document.createElement("span");
       wrapper.className = "md-btn-text";
-
       Array.from(text).forEach(function (char, i) {
         var span = document.createElement("span");
         span.textContent = char;
@@ -78,7 +98,6 @@
         if (char === " ") span.style.whiteSpace = "pre";
         wrapper.appendChild(span);
       });
-
       textNode.parentNode.replaceChild(wrapper, textNode);
     }
 
@@ -166,7 +185,6 @@
   // GSAP GUARD
   // ─────────────────────────────────────────────
   if (typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
-
   gsap.registerPlugin(ScrollTrigger);
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -206,7 +224,6 @@
     }, vars));
   }
 
-
   // ═════════════════════════════════════════════
   // HOME COPY
   // ═════════════════════════════════════════════
@@ -215,7 +232,6 @@
     // ── HERO (on load) ──────────────────────────
     // Elementy jsou skryté přes <head> CSS (opacity:0; visibility:hidden)
     // gsap.set() přidá Y offset UVNITŘ runHomeCopyHero — nevolá se v editoru
-
     function runHomeCopyHero() {
       // Nastav počáteční Y/X offsets těsně před animací
       gsap.set([
@@ -236,23 +252,18 @@
       ], { visibility: "visible" });
 
       var tl = gsap.timeline({ delay: 0.1 });
-
       tl.to(".section_header36 .text-style-tagline", {
         opacity: 1, y: 0, duration: 0.6, ease: "power2.out",
       }, 0);
-
       tl.to(".section_header36 .heading-style-h1", {
         opacity: 1, y: 0, duration: 0.9, ease: "power3.out",
       }, 0.18);
-
       tl.to(".section_header36 .button-group", {
         opacity: 1, y: 0, duration: 0.6, ease: "power2.out",
       }, 0.42);
-
       tl.to(".section_header36 .layout9_item", {
         opacity: 1, y: 0, duration: 0.55, stagger: 0.12, ease: "power2.out",
       }, 0.52);
-
       tl.to(".section_header36 .header36_image-wrapper", {
         opacity: 1, x: 0, duration: 1.05, ease: "power2.out",
       }, 0.15);
@@ -306,7 +317,6 @@
 
       // Foto: instance 0 jde z leva, instance 1 z prava
       var imageX = (i === 0) ? -28 : 28;
-
       if (imageWrapper) {
         gsap.from(imageWrapper, {
           opacity: 0, x: imageX, duration: 0.9, ease: "power2.out",
@@ -465,12 +475,10 @@
 
   } // end isHomeCopy
 
-
   // ═════════════════════════════════════════════
   // HOME (LEGACY)
   // ═════════════════════════════════════════════
   if (isHome) {
-
     gsap.set(".section_layout9 .text-style-tagline", { opacity: 0, y: 16 });
     gsap.set(".section_layout9 .heading-style-h1",   { opacity: 0, y: 24 });
     gsap.set(".layout9_component .text-size-medium",  { opacity: 0, y: 16 });
@@ -489,7 +497,6 @@
       ], { visibility: "visible" });
 
       var tl = gsap.timeline({ delay: 0.1 });
-
       tl.to(".section_layout9 .text-style-tagline", { opacity: 1, y: 0, duration: 0.8,  ease: "power2.out" }, 0);
       tl.to(".section_layout9 .heading-style-h1",   { opacity: 1, y: 0, duration: 1.0,  ease: "power3.out" }, 0.2);
       tl.to(".layout9_component .text-size-medium",  { opacity: 1, y: 0, duration: 0.8,  ease: "power2.out" }, 0.4);
@@ -533,7 +540,6 @@
       scrollTrigger: { trigger: ".faq6_content-left", start: "top 75%", toggleActions: "play none none none" },
       opacity: 0, scale: 0.98, duration: 1.1, ease: "power2.out", delay: 0.2,
     });
-
   } // end isHome
 
 })();
